@@ -1,7 +1,9 @@
 package com.kt.microservices.service
 
 import com.kt.microservices.exception.ResourceNotFoundException
-import com.kt.microservices.model.Person
+import com.kt.microservices.mapper.DozerMapper
+import com.kt.microservices.model.entity.Person
+import com.kt.microservices.model.vo.v1.PersonVO
 import com.kt.microservices.repository.PersonRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -14,17 +16,19 @@ class PersonService {
     private lateinit var repository: PersonRepository
     private val logger = Logger.getLogger(PersonService::class.java.name)
 
-    fun findById(id:Long):Person {
+    fun findById(id:Long): PersonVO {
         logger.info("Find person")
-        return repository.findById(id).orElseThrow({ResourceNotFoundException("not found id.")})
+        var person =  repository.findById(id).orElseThrow({ResourceNotFoundException("not found id.")})
+        return DozerMapper.parseObject(person, PersonVO::class.java)
     }
 
-    fun create(person: Person) : Person{
+    fun create(person: PersonVO) : PersonVO {
         logger.info("Create person ${person.firstName}")
-        return repository.save(person)
+        var entity: Person = DozerMapper.parseObject(person,Person::class.java)
+        return DozerMapper.parseObject(repository.save(entity), PersonVO::class.java)
     }
 
-    fun update(person: Person): Person {
+    fun update(person: PersonVO): PersonVO {
         logger.info("Update person ${person.firstName}")
         var entity = repository.findById(person.id)
             .orElseThrow({ResourceNotFoundException("not found id.")})
@@ -33,8 +37,7 @@ class PersonService {
         entity.address = person.address
         entity.gender = person.gender
 
-       return repository.save(entity)
-
+       return DozerMapper.parseObject(repository.save(entity), PersonVO::class.java)
     }
 
     fun delete(id: Long) {
@@ -44,12 +47,10 @@ class PersonService {
         repository.delete(entity)
     }
 
-    fun findAll(): List<Person> {
+    fun findAll(): List<PersonVO> {
         logger.info("Find all peaple")
-        return repository.findAll()
+        val persons = repository.findAll()
+        return DozerMapper.parseListObjects(persons, PersonVO::class.java)
     }
-
-
-
 
 }

@@ -1,4 +1,4 @@
-package com.kt.microservices.model
+package com.kt.microservices.model.entity
 
 import jakarta.persistence.*
 
