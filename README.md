@@ -1,6 +1,5 @@
 # microservices-kotlin
 microsservices in kotlin basic course
 
-# postgres docker  
 
-docker run --name kt-postgres -e POSTGRES_PASSWORD=kt@@00114477885522 -d postgres
+docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=ktdb mysql
